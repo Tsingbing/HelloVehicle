@@ -16,7 +16,7 @@ public:
     void setup() override;
     void loop() override;
 
-    Parameters g;
+    Parameters g; //xueqingbing
     ParametersG2 g2;
 #if HAL_LOGGING_ENABLED
     AP_Logger logger;
