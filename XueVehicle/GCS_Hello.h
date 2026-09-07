@@ -11,12 +11,15 @@ public:
     void update_hello();
 
 private:
+    uint32_t last_attitude_ms = 0;
+    uint32_t last_imu_ms = 0;
+    uint32_t last_pressure_ms = 0;
     uint8_t sysid_my_gcs() const override { return 255; }
     uint32_t telem_delay() const override { return 0; }
     bool handle_guided_request(AP_Mission::Mission_Command &) override { return false; }
 
 protected:
-    MAV_MODE base_mode() const override { return MAV_MODE_PREFLIGHT; }
+    MAV_MODE base_mode() const override { return MAV_MODE(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED); }
     MAV_STATE vehicle_system_status() const override { return MAV_STATE_STANDBY; }
     bool set_home_to_current_location(bool) override { return false; }
     bool set_home(const Location &, bool) override { return false; }
@@ -29,7 +32,7 @@ public:
     void update();
 
     uint8_t sysid_this_mav() const override { return 1; }
-    uint32_t custom_mode() const override { return 0; }
+    uint32_t custom_mode() const override;
     MAV_TYPE frame_type() const override { return MAV_TYPE_GROUND_ROVER; }
 
 protected:

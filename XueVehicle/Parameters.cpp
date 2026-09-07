@@ -3,7 +3,7 @@
 const AP_Param::GroupInfo Xue::var_info[] = {
     // @Param: GAIN
     // @DisplayName: Hello gain
-    // @Description: Floating-point gain used by the Hello parameter test
+    // @Description: Proportional gain for the software speed controller
     // @Range: 0 10
     // @Increment: 0.1
     // @User: Standard
@@ -11,7 +11,7 @@ const AP_Param::GroupInfo Xue::var_info[] = {
 
     // @Param: SPEED
     // @DisplayName: Hello speed
-    // @Description: Floating-point speed used by the Hello parameter test
+    // @Description: Target speed for the software speed controller
     // @Units: m/s
     // @Range: 0 100
     // @Increment: 0.1
@@ -20,7 +20,7 @@ const AP_Param::GroupInfo Xue::var_info[] = {
 
     // @Param: ENABLE
     // @DisplayName: Enable Hello
-    // @Description: Enables the Hello parameter test value
+    // @Description: Enables drive output in the software speed controller
     // @Values: 0:Disabled,1:Enabled
     // @User: Standard
     AP_GROUPINFO("ENABLE", 3, Xue, enable, 1),
@@ -31,6 +31,20 @@ const AP_Param::GroupInfo Xue::var_info[] = {
     // @Range: -2147483648 2147483647
     // @User: Standard
     AP_GROUPINFO("TEST", 4, Xue, test, 42),
+
+    // @Param: MODE
+    // @DisplayName: Requested learning mode
+    // @Description: Requested software controller mode; invalid requests retain the current mode
+    // @Values: 0:STOP,1:MANUAL,2:AUTO
+    // @User: Standard
+    AP_GROUPINFO("MODE", 5, Xue, mode, 0),
+
+    // @Param: MANUAL
+    // @DisplayName: Manual model drive
+    // @Description: Normalized drive for the software model in MANUAL mode
+    // @Range: -1 1
+    // @User: Standard
+    AP_GROUPINFO("MANUAL", 6, Xue, manual, 0.0f),
 
     AP_GROUPEND
 };
