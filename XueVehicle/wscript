@@ -3,7 +3,7 @@
 
 def build(bld):
     bld.ap_program(
-        program_name='Hello_Vehicle',
-        program_groups=['Hello_Vehicle'],
+        program_name='XueVehicle',
+        program_groups=['HelloVehicle'],
         use='ap',
     )
