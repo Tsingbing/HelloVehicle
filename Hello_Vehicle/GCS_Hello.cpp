@@ -17,6 +17,7 @@ void GCS_MAVLINK_Hello::update_hello()
         last_heartbeat_time = now;
     }
 }
+//xueqingbing
 
 void GCS_Hello::update()
 {
