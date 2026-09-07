@@ -4,6 +4,6 @@
 def build(bld):
     bld.ap_program(
         program_name='Hello_Vehicle',
-        program_groups=['tool'],
+        program_groups=['Hello_Vehicle'],
         use='ap',
     )
