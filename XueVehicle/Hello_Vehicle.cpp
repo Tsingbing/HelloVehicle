@@ -2,26 +2,55 @@
 
 #include <AP_HAL/AP_HAL_Main.h>
 
+#define THISFIRMWARE "XueVehicle V0.1.0-dev"
+#define FW_MAJOR 0
+#define FW_MINOR 1
+#define FW_PATCH 0
+#define FW_TYPE FIRMWARE_VERSION_TYPE_DEV
+// Custom application uses the generic firmware-version vehicle identifier.
+#define APM_BUILD_XueVehicle APM_BUILD_UNKNOWN
+#define FORCE_VERSION_H_INCLUDE
+#include <AP_Common/AP_FWVersionDefine.h>
+#undef FORCE_VERSION_H_INCLUDE
+
 const AP_HAL::HAL &hal = AP_HAL::get_HAL();
 
 Hello_Vehicle hello_vehicle;
 
-// Lower priorities run first. INS/AHRS runs every loop before other tasks.
+// Vehicle methods use the same shorthand as Rover; library methods retain
+// SCHED_TASK_CLASS so the owning object is visible in the task table.
+#define SCHED_TASK(func, rate_hz, max_time_us, priority) \
+    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, func, rate_hz, max_time_us, priority)
+#define FAST_TASK(func) FAST_TASK_CLASS(Hello_Vehicle, &hello_vehicle, func)
+
+/*
+ * 按优先级从小到大排列。普通任务列为：函数、频率 Hz、预计耗时 us、优先级。
+ * FAST_TASK 每个主循环执行；普通任务在到期且预算允许时执行。
+ * 本应用未继承 AP_Vehicle，因此需要自行列出通信、日志和校准任务。
+ */
 const AP_Scheduler::Task Hello_Vehicle::scheduler_tasks[] = {
-    FAST_TASK_CLASS(Hello_Vehicle, &hello_vehicle, update_imu),
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, update_compass, 10, 1000, 6),
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, update_baro, 10, 1000, 7),
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, control_task, 50, 1000, 9),
+    FAST_TASK(update_imu),
+    //         Function name,         Hz,     us, priority
+    SCHED_TASK(update_compass,         10,   1000,  6),
+    SCHED_TASK(update_baro,            10,   1000,  7),
+#if COMPASS_CAL_ENABLED
+    SCHED_TASK_CLASS(Compass,      &hello_vehicle.compass,   cal_update,     100,  200,  8),
+#endif
+    SCHED_TASK(control_task,           50,   1000,  9),
 #if HAL_GCS_ENABLED
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, gcs_task, 100, 1500, 12),
+    SCHED_TASK_CLASS(GCS, static_cast<GCS*>(&hello_vehicle.gcs), update_receive, 100, 1000, 12),
+    SCHED_TASK_CLASS(GCS, static_cast<GCS*>(&hello_vehicle.gcs), update_send,    100, 1000, 14),
 #endif
 #if HAL_LOGGING_ENABLED
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, logger_task, 100, 1000, 15),
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, sensor_log_task, 50, 1500, 18),
-    SCHED_TASK_CLASS(Hello_Vehicle, &hello_vehicle, write_log, 1, 500, 21),
+    SCHED_TASK(logger_task,           100,   1000, 15),
+    SCHED_TASK(sensor_log_task,        50,   1500, 18),
+    SCHED_TASK(write_log,               1,    500, 21),
     SCHED_TASK_CLASS(AP_Scheduler, &hello_vehicle.scheduler, update_logging, 0.2, 1000, 24),
 #endif
 };
+
+#undef FAST_TASK
+#undef SCHED_TASK
 
 #if HAL_LOGGING_ENABLED
 static const LogStructure log_structure[] = {
@@ -173,12 +202,6 @@ void Hello_Vehicle::control_task()
 #endif
 }
 
-void Hello_Vehicle::gcs_task()
-{
-#if HAL_GCS_ENABLED
-    gcs.update();
-#endif
-}
 
 #if HAL_LOGGING_ENABLED
 void Hello_Vehicle::logger_task()

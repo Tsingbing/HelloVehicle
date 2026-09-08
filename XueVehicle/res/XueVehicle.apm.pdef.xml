@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='utf-8'?>
+<paramfile>
+  <vehicles>
+    <parameters name="XueVehicle">
+      <param name="XueVehicle:XUE_GAIN" humanName="速度控制比例增益" documentation="软件虚拟速度控制器的比例增益；仅在 AUTO 模式下使用。" user="Standard">
+        <field name="Range">0 10</field>
+        <field name="Increment">0.1</field>
+      </param>
+      <param name="XueVehicle:XUE_SPEED" humanName="目标速度" documentation="AUTO 模式下的软件模型目标速度，单位 m/s，不直接驱动真实车辆。" user="Standard">
+        <field name="Range">0 100</field>
+        <field name="Increment">0.1</field>
+        <field name="Units">m/s</field>
+      </param>
+      <param name="XueVehicle:XUE_ENABLE" humanName="虚拟驱动力开关" documentation="0 使虚拟驱动力归零，1 允许当前模式产生驱动力；不关闭日志或主循环。" user="Standard">
+        <values>
+          <value code="0">禁用</value>
+          <value code="1">启用</value>
+        </values>
+      </param>
+      <param name="XueVehicle:XUE_TEST" humanName="整数测试参数" documentation="用于学习参数读写、持久化和日志记录，不参与控制计算。" user="Standard">
+        <field name="Range">-2147483648 2147483647</field>
+      </param>
+      <param name="XueVehicle:XUE_MODE" humanName="请求控制模式" documentation="0=停止，1=手动，2=自动。非法请求保留原模式；请求值变化时才重新处理。" user="Standard">
+        <values>
+          <value code="0">停止</value>
+          <value code="1">手动</value>
+          <value code="2">自动</value>
+        </values>
+      </param>
+      <param name="XueVehicle:XUE_MANUAL" humanName="手动虚拟驱动力" documentation="MANUAL 模式下的归一化驱动力，范围 -1 至 1。" user="Standard">
+        <field name="Range">-1 1</field>
+      </param>
+      <param name="XueVehicle:FORMAT_VERSION" humanName="参数存储格式版本" documentation="XueVehicle 参数存储格式版本。" user="Advanced" />
+      <param name="XueVehicle:LOG_BITMASK" humanName="日志位掩码" documentation="传给 AP_Logger 的日志位掩码；当前自定义 XUE、CTRL、XIMU 等记录未按此位掩码过滤，不能将其视为这些记录的总开关。" user="Advanced" />
+    </parameters>
+  </vehicles>
+  <libraries>
+    <parameters name="INS">
+      <param name="INS_GYROFFS_X" humanName="第 1 组陀螺仪 X 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYROFFS_Y" humanName="第 1 组陀螺仪 Y 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYROFFS_Z" humanName="第 1 组陀螺仪 Z 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR2OFFS_X" humanName="第 2 组陀螺仪 X 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR2OFFS_Y" humanName="第 2 组陀螺仪 Y 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR2OFFS_Z" humanName="第 2 组陀螺仪 Z 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR3OFFS_X" humanName="第 3 组陀螺仪 X 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR3OFFS_Y" humanName="第 3 组陀螺仪 Y 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_GYR3OFFS_Z" humanName="第 3 组陀螺仪 Z 轴零偏" documentation="陀螺仪零偏校准结果，单位 rad/s，由启动校准流程生成，不建议手工填写。" user="Advanced" calibration="1">
+        <field name="Units">rad/s</field>
+      </param>
+      <param name="INS_ACCSCAL_X" humanName="第 1 组加速度计 X 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACCSCAL_Y" humanName="第 1 组加速度计 Y 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACCSCAL_Z" humanName="第 1 组加速度计 Z 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACCOFFS_X" humanName="第 1 组加速度计 X 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACCOFFS_Y" humanName="第 1 组加速度计 Y 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACCOFFS_Z" humanName="第 1 组加速度计 Z 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC2SCAL_X" humanName="第 2 组加速度计 X 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC2SCAL_Y" humanName="第 2 组加速度计 Y 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC2SCAL_Z" humanName="第 2 组加速度计 Z 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC2OFFS_X" humanName="第 2 组加速度计 X 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC2OFFS_Y" humanName="第 2 组加速度计 Y 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC2OFFS_Z" humanName="第 2 组加速度计 Z 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC3SCAL_X" humanName="第 3 组加速度计 X 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC3SCAL_Y" humanName="第 3 组加速度计 Y 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC3SCAL_Z" humanName="第 3 组加速度计 Z 轴比例系数" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">0.8 1.2</field>
+      </param>
+      <param name="INS_ACC3OFFS_X" humanName="第 3 组加速度计 X 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC3OFFS_Y" humanName="第 3 组加速度计 Y 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_ACC3OFFS_Z" humanName="第 3 组加速度计 Z 轴偏置" documentation="加速度计校准结果。比例系数无量纲，偏置单位 m/s²；应通过校准流程生成，不能用陀螺仪启动校准代替。" user="Advanced" calibration="1">
+        <field name="Range">-3.5 3.5</field>
+        <field name="Units">m/s/s</field>
+      </param>
+      <param name="INS_GYRO_FILTER" humanName="陀螺仪低通滤波截止频率" documentation="陀螺仪低通滤波器的截止频率。降低该值可减弱高频振动影响，但会增加响应滞后；0 表示不滤波，不建议使用。" user="Advanced">
+        <field name="Range">0 256</field>
+        <field name="Units">Hz</field>
+      </param>
+      <param name="INS_ACCEL_FILTER" humanName="加速度计低通滤波截止频率" documentation="加速度计低通滤波器的截止频率。降低该值可减弱高频振动影响，但会增加响应滞后；0 表示不滤波，不建议使用。" user="Advanced">
+        <field name="Range">0 256</field>
+        <field name="Units">Hz</field>
+      </param>
+      <param name="INS_USE" humanName="是否使用第 1 套 IMU" documentation="允许该 IMU 用于姿态、速度和位置估计；不等同于阻止硬件驱动启动。" user="Advanced">
+        <values>
+          <value code="0">禁用</value>
+          <value code="1">启用</value>
+        </values>
+      </param>
+      <param name="INS_USE2" humanName="是否使用第 2 套 IMU" documentation="允许该 IMU 用于姿态、速度和位置估计；不等同于阻止硬件驱动启动。" user="Advanced">
+        <values>
+          <value code="0">禁用</value>
+          <value code="1">启用</value>
+        </values>
+      </param>
+      <param name="INS_USE3" humanName="是否使用第 3 套 IMU" documentation="允许该 IMU 用于姿态、速度和位置估计；不等同于阻止硬件驱动启动。" user="Advanced">
+        <values>
+          <value code="0">禁用</value>
+          <value code="1">启用</value>
+        </values>
+      </param>
+      <param name="INS_STILL_THRESH" humanName="静止检测阈值" documentation="判断载体是否静止时容许的振动程度。完全静止约为 0.05；源码建议固定翼和地面车为 0.1，多旋翼为 1，传统直升机为 5。" user="Advanced">
+        <field name="Range">0.05 50</field>
+      </param>
+      <param name="INS_GYR_CAL" humanName="陀螺仪自动校准时机" documentation="控制是否在启动时执行陀螺仪零偏校准。启动校准期间应保持板卡静止；此设置不执行加速度计六面校准。" user="Advanced">
+        <values>
+          <value code="0">从不</value>
+          <value code="1">仅启动时</value>
+        </values>
+      </param>
+      <param name="INS_TRIM_OPTION" humanName="加速度计校准水平修正方式" documentation="指定加速度计校准完成后如何确定机体水平修正值。" user="Advanced">
+        <values>
+          <value code="0">不调整水平修正</value>
+          <value code="1">假定首次姿态为水平</value>
+          <value code="2">假定参考加速度计与机体完全对齐</value>
+        </values>
+      </param>
+      <param name="INS_ACC_BODYFIX" humanName="水平修正参考加速度计" documentation="选择用于水平修正计算、与机体固定对齐的加速度计。这不是主 IMU 选择开关。" user="Advanced">
+        <values>
+          <value code="1">第 1 套 IMU</value>
+          <value code="2">第 2 套 IMU</value>
+          <value code="3">第 3 套 IMU</value>
+        </values>
+      </param>
+      <param name="INS_POS1_X" humanName="第 1 组 IMU X 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS1_Y" humanName="第 1 组 IMU Y 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS1_Z" humanName="第 1 组 IMU Z 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS2_X" humanName="第 2 组 IMU X 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS2_Y" humanName="第 2 组 IMU Y 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS2_Z" humanName="第 2 组 IMU Z 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS3_X" humanName="第 3 组 IMU X 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-10 10</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS3_Y" humanName="第 3 组 IMU Y 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_POS3_Z" humanName="第 3 组 IMU Z 轴安装位置" documentation="加速度计相对机体原点的位置，单位 m，X 向前、Y 向右、Z 向下为正。IMU 应尽量靠近重心，以减小转动和振动对速度估计的影响。" user="Advanced">
+        <field name="Range">-5 5</field>
+        <field name="Increment">0.01</field>
+        <field name="Units">m</field>
+      </param>
+      <param name="INS_GYR_ID" humanName="第 1 组陀螺仪设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_GYR2_ID" humanName="第 2 组陀螺仪设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_GYR3_ID" humanName="第 3 组陀螺仪设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_ACC_ID" humanName="第 1 组加速度计设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_ACC2_ID" humanName="第 2 组加速度计设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_ACC3_ID" humanName="第 3 组加速度计设备标识" documentation="只读设备标识，编码包含传感器类型、总线和实例信息。用于识别设备，不应手工修改。" user="Advanced">
+        <field name="ReadOnly">True</field>
+      </param>
+      <param name="INS_FAST_SAMPLE" humanName="IMU 快速采样掩码" documentation="选择启用快速采样的 IMU，仅对支持此功能的传感器生效。位编号从 0 开始。" user="Advanced">
+        <field name="Bitmask">0:第 1 套 IMU,1:第 2 套 IMU,2:第 3 套 IMU</field>
+      </param>
+      <param name="INS_ENABLE_MASK" humanName="IMU 启用掩码" documentation="选择允许启动的 IMU，可阻止指定探测设备启动。位编号从 0 开始，修改后重启生效。" user="Advanced">
+        <field name="Bitmask">0:第 1 套 IMU,1:第 2 套 IMU,2:第 3 套 IMU,3:第 4 套 IMU,4:第 5 套 IMU,5:第 6 套 IMU,6:第 7 套 IMU</field>
+      </param>
+      <param name="INS_GYRO_RATE" humanName="快速采样陀螺仪处理速率" documentation="设置启用快速采样的 IMU 滤波处理速率，须至少为最高滤波频率的两倍。不支持所选速率时使用下一档更高的支持速率；不支持快速采样的设备忽略此设置并使用默认 1 kHz。不是主循环频率。" user="Advanced">
+        <field name="RebootRequired">True</field>
+        <values>
+          <value code="0">1 kHz</value>
+          <value code="1">2 kHz</value>
+          <value code="2">4 kHz</value>
+          <value code="3">8 kHz</value>
+        </values>
+      </param>
+      <param name="INS_ACC1_CALTEMP" humanName="第 1 组加速度计校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_GYR1_CALTEMP" humanName="第 1 组陀螺仪校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_ACC2_CALTEMP" humanName="第 2 组加速度计校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_GYR2_CALTEMP" humanName="第 2 组陀螺仪校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_ACC3_CALTEMP" humanName="第 3 组加速度计校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_GYR3_CALTEMP" humanName="第 3 组陀螺仪校准温度" documentation="进行传感器校准时的温度，单位 ℃。由校准流程维护。" user="Advanced" calibration="1">
+        <field name="Units">degC</field>
+      </param>
+      <param name="INS_TCAL_OPTIONS" humanName="温度校准选项" documentation="启用可选温度校准功能。持久保存参数选项会在下一次引导程序更新时，将加速度计和温度校准参数保存到引导程序扇区。" user="Advanced">
+        <field name="Bitmask">0:持久保存参数</field>
+      </param>
+      <param name="INS_RAW_LOG_OPT" humanName="原始采样日志选项" documentation="选择记录主陀螺仪或所有陀螺仪，以及滤波前或滤波后的数据。此参数本身不启动日志后端。" user="Advanced">
+        <field name="Bitmask">0:仅记录主陀螺仪, 1:记录所有陀螺仪, 2:滤波后, 3:滤波前和滤波后</field>
+      </param>
+    </parameters>
+  </libraries>
+</paramfile>

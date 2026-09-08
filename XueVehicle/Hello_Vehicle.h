@@ -49,7 +49,6 @@ private:
     void update_imu();
     void update_compass();
     void control_task();
-    void gcs_task();
     static const AP_Scheduler::Task scheduler_tasks[];
     void update_control(float dt);
     void update_mode();

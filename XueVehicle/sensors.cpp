@@ -58,6 +58,31 @@ void Hello_Vehicle::update_imu()
 void Hello_Vehicle::update_compass()
 {
     compass.read();
+#if HAL_LOGGING_ENABLED
+    if (!logger.logging_started()) {
+        return;
+    }
+    // Log even when no device was detected: absence must be observable.
+    const uint8_t count = compass.get_count();
+    bool calibrating = false;
+#if COMPASS_CAL_ENABLED
+    calibrating = compass.is_calibrating();
+#endif
+    logger.Write("XCST", "TimeUS,Count,Healthy,UseYaw,Cal", "QBBBB",
+                 AP_HAL::micros64(), count, uint8_t(compass.healthy()),
+                 uint8_t(compass.use_for_yaw()), uint8_t(calibrating));
+    for (uint8_t i = 0; i < count; i++) {
+        const Vector3f &field = compass.get_field(i);
+        // Keep the last field even if unhealthy; AgeMS identifies stale data.
+        logger.Write("XCMP", "TimeUS,I,MX,MY,MZ,Norm,AgeMS,Healthy,UseYaw,Config",
+                     "QBffffIBBB", AP_HAL::micros64(), i,
+                     double(field.x), double(field.y), double(field.z),
+                     double(field.length()),
+                     uint32_t(AP_HAL::millis() - compass.last_update_ms(i)),
+                     uint8_t(compass.healthy(i)), uint8_t(compass.use_for_yaw(i)),
+                     uint8_t(compass.configured(i)));
+    }
+#endif
 }
 
 #if HAL_LOGGING_ENABLED

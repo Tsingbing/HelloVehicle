@@ -8,47 +8,40 @@ uint32_t GCS_Hello::custom_mode() const
     return uint32_t(hello_vehicle.get_mode());
 }
 
+// Match Rover's stream layout; include only this application's telemetry.
 const AP_Param::GroupInfo GCS_MAVLINK_Parameters::var_info[] = {
+    AP_GROUPINFO("RAW_SENS", 0, GCS_MAVLINK_Parameters, streamRates[0], 10),
+    AP_GROUPINFO("EXTRA1",   5, GCS_MAVLINK_Parameters, streamRates[5], 10),
+    AP_GROUPINFO("EXTRA3",   7, GCS_MAVLINK_Parameters, streamRates[7], 5),
+    AP_GROUPINFO("PARAMS",   8, GCS_MAVLINK_Parameters, streamRates[8], 10),
     AP_GROUPEND
 };
 
-void GCS_MAVLINK_Hello::update_hello()
-{
-    update_receive();
-    queued_param_send();
+static const ap_message STREAM_RAW_SENSORS_msgs[] = {
+    MSG_RAW_IMU,
+    MSG_SCALED_PRESSURE,
+};
+static const ap_message STREAM_EXTRA1_msgs[] = {
+    MSG_ATTITUDE,
+};
+#if COMPASS_CAL_ENABLED
+static const ap_message STREAM_EXTRA3_msgs[] = {
+    MSG_MAG_CAL_REPORT,
+    MSG_MAG_CAL_PROGRESS,
+};
+#endif
+static const ap_message STREAM_PARAMS_msgs[] = {
+    MSG_NEXT_PARAM,
+};
 
-    const uint32_t now = AP_HAL::millis();
-    if (now - last_pressure_ms >= 100 && hello_vehicle.barometer.healthy(0) &&
-        HAVE_PAYLOAD_SPACE(chan, SCALED_PRESSURE)) {
-        send_scaled_pressure();
-        last_pressure_ms = now;
-    }
-    if (now - last_attitude_ms >= 100 && HAVE_PAYLOAD_SPACE(chan, ATTITUDE)) {
-        send_attitude();
-        last_attitude_ms = now;
-    }
-    if (now - last_imu_ms >= 100 && HAVE_PAYLOAD_SPACE(chan, RAW_IMU)) {
-        send_raw_imu();
-        last_imu_ms = now;
-    }
-    if (now - last_heartbeat_time >= 1000) {
-        send_heartbeat();
-        last_heartbeat_time = now;
-    }
-}
-//xueqingbing
-
-void GCS_Hello::update()
-{
-    GCS_MAVLINK_Hello *link = chan(0);
-    if (link != nullptr) {
-        link->update_hello();
-    }
-
-    // Flush queued STATUSTEXT and other deferred MAVLink messages.  The
-    // heartbeat is sent directly by update_hello(), but send_text() relies on
-    // this standard GCS transmit update.
-    update_send();
-}
+const GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] = {
+    MAV_STREAM_ENTRY(STREAM_RAW_SENSORS),
+    MAV_STREAM_ENTRY(STREAM_EXTRA1),
+#if COMPASS_CAL_ENABLED
+    MAV_STREAM_ENTRY(STREAM_EXTRA3),
+#endif
+    MAV_STREAM_ENTRY(STREAM_PARAMS),
+    MAV_STREAM_TERMINATOR
+};
 
 #endif // HAL_GCS_ENABLED

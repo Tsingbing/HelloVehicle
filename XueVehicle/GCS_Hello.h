@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GCS_MAVLink/GCS.h>
+#include <AP_Compass/AP_Compass_config.h>
 
 #if HAL_GCS_ENABLED
 
@@ -8,12 +9,7 @@ class GCS_MAVLINK_Hello : public GCS_MAVLINK {
 public:
     using GCS_MAVLINK::GCS_MAVLINK;
 
-    void update_hello();
-
 private:
-    uint32_t last_attitude_ms = 0;
-    uint32_t last_imu_ms = 0;
-    uint32_t last_pressure_ms = 0;
     uint8_t sysid_my_gcs() const override { return 255; }
     uint32_t telem_delay() const override { return 0; }
     bool handle_guided_request(AP_Mission::Mission_Command &) override { return false; }
@@ -29,8 +25,6 @@ protected:
 
 class GCS_Hello : public GCS {
 public:
-    void update();
-
     uint8_t sysid_this_mav() const override { return 1; }
     uint32_t custom_mode() const override;
     MAV_TYPE frame_type() const override { return MAV_TYPE_GROUND_ROVER; }
