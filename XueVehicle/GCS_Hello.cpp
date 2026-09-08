@@ -11,6 +11,7 @@ uint32_t GCS_Hello::custom_mode() const
 // Match Rover's stream layout; include only this application's telemetry.
 const AP_Param::GroupInfo GCS_MAVLINK_Parameters::var_info[] = {
     AP_GROUPINFO("RAW_SENS", 0, GCS_MAVLINK_Parameters, streamRates[0], 10),
+    AP_GROUPINFO("RC_CHAN", 2, GCS_MAVLINK_Parameters, streamRates[2], 10),
     AP_GROUPINFO("EXTRA1",   5, GCS_MAVLINK_Parameters, streamRates[5], 10),
     AP_GROUPINFO("EXTRA3",   7, GCS_MAVLINK_Parameters, streamRates[7], 5),
     AP_GROUPINFO("PARAMS",   8, GCS_MAVLINK_Parameters, streamRates[8], 10),
@@ -20,6 +21,10 @@ const AP_Param::GroupInfo GCS_MAVLINK_Parameters::var_info[] = {
 static const ap_message STREAM_RAW_SENSORS_msgs[] = {
     MSG_RAW_IMU,
     MSG_SCALED_PRESSURE,
+};
+static const ap_message STREAM_RC_CHANNELS_msgs[] = {
+    MSG_RC_CHANNELS,
+    MSG_RC_CHANNELS_RAW,
 };
 static const ap_message STREAM_EXTRA1_msgs[] = {
     MSG_ATTITUDE,
@@ -36,6 +41,7 @@ static const ap_message STREAM_PARAMS_msgs[] = {
 
 const GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] = {
     MAV_STREAM_ENTRY(STREAM_RAW_SENSORS),
+    MAV_STREAM_ENTRY(STREAM_RC_CHANNELS),
     MAV_STREAM_ENTRY(STREAM_EXTRA1),
 #if COMPASS_CAL_ENABLED
     MAV_STREAM_ENTRY(STREAM_EXTRA3),

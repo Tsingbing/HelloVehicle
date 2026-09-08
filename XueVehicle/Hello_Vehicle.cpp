@@ -30,6 +30,7 @@ Hello_Vehicle hello_vehicle;
  */
 const AP_Scheduler::Task Hello_Vehicle::scheduler_tasks[] = {
     FAST_TASK(update_imu),
+    SCHED_TASK(read_radio,             50,    200,  3),
     //         Function name,         Hz,     us, priority
     SCHED_TASK(update_compass,         10,   1000,  6),
     SCHED_TASK(update_baro,            10,   1000,  7),
@@ -44,6 +45,7 @@ const AP_Scheduler::Task Hello_Vehicle::scheduler_tasks[] = {
 #if HAL_LOGGING_ENABLED
     SCHED_TASK(logger_task,           100,   1000, 15),
     SCHED_TASK(sensor_log_task,        50,   1500, 18),
+    SCHED_TASK(log_radio,              10,   1000, 20),
     SCHED_TASK(write_log,               1,    500, 21),
     SCHED_TASK_CLASS(AP_Scheduler, &hello_vehicle.scheduler, update_logging, 0.2, 1000, 24),
 #endif
@@ -101,6 +103,10 @@ const AP_Param::Info var_info[] = {
     // @Path: ../../../libraries/AP_Baro/AP_Baro.cpp
     GOBJECT(barometer, "BARO", AP_Baro),
 
+    // @Group: RC
+    // @Path: ../../../libraries/RC_Channel/RC_Channels_VarInfo.h
+    GOBJECT(rc_channels, "RC", RC_Channels_Hello),
+
     AP_VAREND
 };
 
@@ -133,6 +139,7 @@ void Hello_Vehicle::setup()
 {
     load_parameters();
     BoardConfig.init();
+    init_radio();
 
 #if HAL_LOGGING_ENABLED
     // Hello_Vehicle is a dedicated filesystem logging test.  An EEPROM left

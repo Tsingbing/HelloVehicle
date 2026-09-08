@@ -15,6 +15,7 @@
 
 #include "GCS_Hello.h"
 #include "Parameters.h"
+#include "RC_Hello.h"
 
 class Hello_Vehicle : public AP_HAL::HAL::Callbacks {
 public:
@@ -37,12 +38,20 @@ public:
     Compass compass;
     AP_AHRS ahrs;
     AP_Scheduler scheduler;
+    RC_Channels_Hello rc_channels;
 #if HAL_EXTERNAL_AHRS_ENABLED
     AP_ExternalAHRS external_ahrs;
 #endif
 
 private:
     void load_parameters();
+    void init_radio();
+    void read_radio();
+    bool rc_seen = false;
+    uint32_t last_rc_ms = 0;
+#if HAL_LOGGING_ENABLED
+    void log_radio();
+#endif
     void init_imu();
     void init_baro();
     void update_baro();

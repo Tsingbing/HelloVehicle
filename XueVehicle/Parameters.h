@@ -28,6 +28,7 @@ public:
         k_param_compass = 7,
         k_param_scheduler = 8,
         k_param_barometer = 9,
+        k_param_rc_channels = 10,
     };
 
     AP_Int16 format_version;

@@ -559,3 +559,24 @@ RAW_SENS 默认 10 Hz（RAW_IMU、SCALED_PRESSURE），EXTRA1 默认 10 Hz
 自定义健康门控；仍须结合 XBAR.Healthy 和数据更新时间判断有效性。
 程序现在自行定义 XueVehicle V0.1.0-dev 固件版本，避免链接进
 GCS_Dummy 的空流表。需要实板验证完整参数下载、姿态和罗盘校准流程。
+
+### RC 输入观测（第一阶段）
+
+RC_Hello.h 定义 RC_Channel/RC_Channels 子类；radio.cpp 复用库的
+RC_Channels_VarInfo.h 注册 RC1_MIN/MAX/TRIM/REVERSED/DZ 等参数。
+BoardConfig 初始化后调用 init_radio；50 Hz read_radio 调用 read_input。
+各通道暂统一使用中心对称的 ±1000 控制范围，默认死区 30 微秒，尚未按
+油门、转向等功能映射，不用于改变模式或输出，XUE_MANUAL 继续生效。
+
+新增 10 Hz 日志：XRCS 记录通道数、距最近成功输入更新的毫秒数及 Fresh；
+从未收到输入时 AgeMS=4294967295。XRC 按从 1 开始的通道号记录 PWM
+（微秒）和 Control（库转换后的控制值）。Fresh 表示 500 ms 内有成功更新，
+不是接收机失效判定；接收机保持旧值或输出预设失控值时可能仍有数据。
+read_input 返回 false 只表示本轮未成功更新，不能直接等同于失联。
+本阶段没有启用 RC 模式开关、辅助功能、解锁或车辆失效保护逻辑。
+
+标准 STREAM_RC_CHANNELS 默认 10 Hz 发送 RC_CHANNELS，并在 MAVLink1
+链路发送 RC_CHANNELS_RAW；地面站可请求修改消息频率。确认实际接收机
+输出模式和接线后，移动摇杆，检查地面站通道值和 XRC 日志，再关闭遥控器
+观察接收机的实际输出行为。校准最小值、中位、最大值后检查方向和死区。
+尚未实板验证接收机输入，不能据此确认 R12F 的协议或接线正确。
